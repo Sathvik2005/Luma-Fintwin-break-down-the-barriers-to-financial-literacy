@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   ArrowRight,
   ShieldCheck,
@@ -91,6 +92,27 @@ export default function LandingPage({ setCurrentTab }: LandingPageProps) {
     },
   ];
 
+  // Motion variant definitions for premium stagger loading
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.05,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+    },
+  };
+
   return (
     <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
       {/* Hero Section */}
@@ -99,18 +121,23 @@ export default function LandingPage({ setCurrentTab }: LandingPageProps) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="lg:grid lg:grid-cols-12 lg:gap-12 items-center">
             {/* Left Copy */}
-            <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
-              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-semibold">
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="lg:col-span-6 space-y-6 text-center lg:text-left"
+            >
+              <motion.div variants={itemVariants} className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-semibold">
                 <Sparkles className="h-3.5 w-3.5" />
                 <span>Next-Gen Financial Intelligence</span>
-              </div>
-              <h1 className="font-sans text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
+              </motion.div>
+              <motion.h1 variants={itemVariants} className="font-sans text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
                 Understand Your <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Money</span> with AI.
-              </h1>
-              <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-xl mx-auto lg:mx-0">
+              </motion.h1>
+              <motion.p variants={itemVariants} className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-xl mx-auto lg:mx-0">
                 Upload any financial document and get simple explanations, hidden risks, important terms, and personalized financial advice. Take control of your financial destiny today.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+              </motion.p>
+              <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                 <button
                   onClick={() => setCurrentTab("dashboard")}
                   className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg shadow-blue-500/25 dark:shadow-none transition-all group cursor-pointer"
@@ -124,18 +151,23 @@ export default function LandingPage({ setCurrentTab }: LandingPageProps) {
                 >
                   Explore Lessons
                 </button>
-              </div>
-
+              </motion.div>
+ 
               {/* Secure statement */}
-              <div className="flex items-center justify-center lg:justify-start space-x-2 text-xs text-slate-500 dark:text-slate-500 pt-2">
+              <motion.div variants={itemVariants} className="flex items-center justify-center lg:justify-start space-x-2 text-xs text-slate-500 dark:text-slate-500 pt-2">
                 <ShieldCheck className="h-4 w-4 text-emerald-500" />
                 <span>Secure, private, server-side processing.</span>
-              </div>
-            </div>
-
+              </motion.div>
+            </motion.div>
+ 
             {/* Right Mockup Illustration */}
             <div className="mt-16 lg:mt-0 lg:col-span-6 relative flex justify-center">
-              <div className="relative w-full max-w-md p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-100 dark:shadow-none">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96, y: 15 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.35 }}
+                className="relative w-full max-w-md p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-100 dark:shadow-none"
+              >
                 {/* Upload Action Visualizer */}
                 <div className="border border-dashed border-slate-300 dark:border-slate-800 rounded-2xl p-6 bg-slate-50/50 dark:bg-slate-950/30 flex flex-col items-center justify-center text-center">
                   <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-3 shadow-sm">
@@ -146,9 +178,13 @@ export default function LandingPage({ setCurrentTab }: LandingPageProps) {
                     <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-1.5 rounded-full w-4/5 animate-pulse" />
                   </div>
                 </div>
-
+ 
                 {/* Floating Insight Card 1: Hidden Fees */}
-                <div className="absolute -top-6 -left-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3.5 rounded-2xl shadow-lg shadow-slate-100 dark:shadow-none flex items-center space-x-3 max-w-[200px] animate-bounce">
+                <motion.div
+                  animate={{ y: [-4, 4, -4] }}
+                  transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                  className="absolute -top-6 -left-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3.5 rounded-2xl shadow-lg shadow-slate-100 dark:shadow-none flex items-center space-x-3 max-w-[200px]"
+                >
                   <div className="h-8 w-8 rounded-lg bg-red-50 dark:bg-red-950/20 text-red-500 flex items-center justify-center font-bold text-xs">
                     $
                   </div>
@@ -156,10 +192,14 @@ export default function LandingPage({ setCurrentTab }: LandingPageProps) {
                     <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider">Hidden Fees Found</p>
                     <p className="text-xs font-bold text-slate-800 dark:text-white">$250 processing fee</p>
                   </div>
-                </div>
-
+                </motion.div>
+ 
                 {/* Floating Insight Card 2: Risk Level */}
-                <div className="absolute top-1/2 -right-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3.5 rounded-2xl shadow-lg shadow-slate-100 dark:shadow-none flex items-center space-x-3 max-w-[180px]">
+                <motion.div
+                  animate={{ y: [4, -4, 4] }}
+                  transition={{ repeat: Infinity, duration: 4.8, ease: "easeInOut" }}
+                  className="absolute top-1/2 -right-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3.5 rounded-2xl shadow-lg shadow-slate-100 dark:shadow-none flex items-center space-x-3 max-w-[180px]"
+                >
                   <div className="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/20 text-amber-500">
                     <AlertTriangle className="h-4 w-4" />
                   </div>
@@ -167,10 +207,14 @@ export default function LandingPage({ setCurrentTab }: LandingPageProps) {
                     <p className="text-[10px] font-bold text-amber-500 uppercase tracking-wider">Risk Severity</p>
                     <p className="text-xs font-semibold text-slate-800 dark:text-white">Late fee jump to 29%</p>
                   </div>
-                </div>
-
+                </motion.div>
+ 
                 {/* Floating Insight Card 3: Health Score */}
-                <div className="absolute -bottom-6 left-10 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 py-2.5 px-4 rounded-2xl shadow-lg shadow-slate-100 dark:shadow-none flex items-center space-x-3">
+                <motion.div
+                  animate={{ y: [-5, 5, -5] }}
+                  transition={{ repeat: Infinity, duration: 4.4, ease: "easeInOut" }}
+                  className="absolute -bottom-6 left-10 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 py-2.5 px-4 rounded-2xl shadow-lg shadow-slate-100 dark:shadow-none flex items-center space-x-3"
+                >
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 font-bold text-sm">
                     84
                   </div>
@@ -178,8 +222,8 @@ export default function LandingPage({ setCurrentTab }: LandingPageProps) {
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Health Score</p>
                     <p className="text-xs font-semibold text-slate-800 dark:text-white">Great savings habits!</p>
                   </div>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             </div>
           </div>
         </div>
@@ -396,11 +440,26 @@ export default function LandingPage({ setCurrentTab }: LandingPageProps) {
                     <span>{faq.question}</span>
                     {isOpen ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
                   </button>
-                  {isOpen && (
-                    <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 border-t border-slate-50 dark:border-slate-800">
-                      {faq.answer}
-                    </div>
-                  )}
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        key="faq-content"
+                        initial="collapsed"
+                        animate="open"
+                        exit="collapsed"
+                        variants={{
+                          open: { opacity: 1, height: "auto" },
+                          collapsed: { opacity: 0, height: 0 }
+                        }}
+                        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 border-t border-slate-50 dark:border-slate-800">
+                          {faq.answer}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               );
             })}

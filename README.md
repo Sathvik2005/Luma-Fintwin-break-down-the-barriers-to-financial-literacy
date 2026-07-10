@@ -256,7 +256,7 @@ Frontend
 npm run dev
 ```
 
-Backend
+### Run the server
 
 ```bash
 npm run server

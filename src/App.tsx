@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import Navbar from "./components/Navbar";
 import LandingPage from "./components/LandingPage";
 import Dashboard from "./components/Dashboard";
@@ -243,66 +244,115 @@ export default function App() {
         />
 
         {/* Content routing container */}
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {currentTab === "landing" && (
-            <div className="-mx-4 sm:-mx-6 lg:-mx-8 -my-8">
-              <LandingPage setCurrentTab={setCurrentTab} />
-            </div>
-          )}
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-hidden">
+          <AnimatePresence mode="wait">
+            {currentTab === "landing" && (
+              <motion.div
+                key="landing"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="-mx-4 sm:-mx-6 lg:-mx-8 -my-8"
+              >
+                <LandingPage setCurrentTab={setCurrentTab} />
+              </motion.div>
+            )}
 
-          {currentTab === "dashboard" && (
-            <Dashboard
-              user={user}
-              setUser={setUser}
-              documents={documents}
-              onSelectDocument={handleSelectDocument}
-              setCurrentTab={setCurrentTab}
-              challenges={challenges}
-              onCompleteChallenge={handleCompleteChallenge}
-              recommendations={recommendations}
-              lessons={lessons}
-              badges={badges}
-              onResetProgress={handleResetProgress}
-            />
-          )}
+            {currentTab === "dashboard" && (
+              <motion.div
+                key="dashboard"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <Dashboard
+                  user={user}
+                  setUser={setUser}
+                  documents={documents}
+                  onSelectDocument={handleSelectDocument}
+                  setCurrentTab={setCurrentTab}
+                  challenges={challenges}
+                  onCompleteChallenge={handleCompleteChallenge}
+                  recommendations={recommendations}
+                  lessons={lessons}
+                  badges={badges}
+                  onResetProgress={handleResetProgress}
+                />
+              </motion.div>
+            )}
 
-          {currentTab === "analyzer" && (
-            <DocAnalyzer
-              documents={documents}
-              setDocuments={setDocuments}
-              selectedDocument={selectedDocument}
-              setSelectedDocument={setSelectedDocument}
-              onUnlockAchievement={handleUnlockAchievement}
-              onIncrementXP={handleIncrementXP}
-            />
-          )}
+            {currentTab === "analyzer" && (
+              <motion.div
+                key="analyzer"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <DocAnalyzer
+                  documents={documents}
+                  setDocuments={setDocuments}
+                  selectedDocument={selectedDocument}
+                  setSelectedDocument={setSelectedDocument}
+                  onUnlockAchievement={handleUnlockAchievement}
+                  onIncrementXP={handleIncrementXP}
+                />
+              </motion.div>
+            )}
 
-          {currentTab === "budget" && (
-            <BudgetCoach
-              onUnlockAchievement={handleUnlockAchievement}
-              onIncrementXP={handleIncrementXP}
-            />
-          )}
+            {currentTab === "budget" && (
+              <motion.div
+                key="budget"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <BudgetCoach
+                  onUnlockAchievement={handleUnlockAchievement}
+                  onIncrementXP={handleIncrementXP}
+                />
+              </motion.div>
+            )}
 
-          {currentTab === "learning" && (
-            <LearningCenter
-              lessons={lessons}
-              onCompleteLesson={handleCompleteLesson}
-              onIncrementXP={handleIncrementXP}
-              onUnlockAchievement={handleUnlockAchievement}
-            />
-          )}
+            {currentTab === "learning" && (
+              <motion.div
+                key="learning"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <LearningCenter
+                  lessons={lessons}
+                  onCompleteLesson={handleCompleteLesson}
+                  onIncrementXP={handleIncrementXP}
+                  onUnlockAchievement={handleUnlockAchievement}
+                />
+              </motion.div>
+            )}
 
-          {currentTab === "gamification" && (
-            <Gamification
-              user={user}
-              challenges={challenges}
-              onCompleteChallenge={handleCompleteChallenge}
-              badges={badges}
-              onIncrementXP={handleIncrementXP}
-              onUnlockAchievement={handleUnlockAchievement}
-            />
-          )}
+            {currentTab === "gamification" && (
+              <motion.div
+                key="gamification"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <Gamification
+                  user={user}
+                  challenges={challenges}
+                  onCompleteChallenge={handleCompleteChallenge}
+                  badges={badges}
+                  onIncrementXP={handleIncrementXP}
+                  onUnlockAchievement={handleUnlockAchievement}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </main>
 
         {/* Unified Applet Footer */}

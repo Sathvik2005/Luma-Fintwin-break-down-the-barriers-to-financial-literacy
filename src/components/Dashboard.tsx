@@ -4,6 +4,7 @@
  */
 
 import React from "react";
+import { motion } from "motion/react";
 import {
   ShieldAlert,
   GraduationCap,
@@ -115,10 +116,12 @@ export default function Dashboard({
                 fill="none"
                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               />
-              <path
+              <motion.path
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: user.healthScore / 100 }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
                 className="text-emerald-500"
                 strokeWidth="3.5"
-                strokeDasharray={`${user.healthScore}, 100`}
                 strokeLinecap="round"
                 stroke="currentColor"
                 fill="none"
@@ -314,10 +317,15 @@ export default function Dashboard({
                     Mark as Completed
                   </button>
                 ) : (
-                  <div className="flex items-center space-x-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-bold">
+                  <motion.div
+                    initial={{ scale: 0.85, opacity: 0 }}
+                    animate={{ scale: [0.9, 1.05, 1], opacity: 1 }}
+                    transition={{ duration: 0.35, ease: "easeOut" }}
+                    className="flex items-center space-x-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-bold"
+                  >
                     <CheckCircle className="h-4 w-4" />
                     <span>XP Rewarded Successfully!</span>
-                  </div>
+                  </motion.div>
                 )}
               </div>
             ))}

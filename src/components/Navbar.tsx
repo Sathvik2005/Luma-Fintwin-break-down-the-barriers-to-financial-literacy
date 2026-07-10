@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { Wallet, Menu, X, Sun, Moon, Flame, Trophy } from "lucide-react";
 import { UserProfile } from "../types";
 
@@ -58,19 +59,26 @@ export default function Navbar({
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                  className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 focus:outline-none cursor-pointer ${
                     currentTab === item.id
-                      ? "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 font-semibold"
-                      : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                      ? "text-blue-600 dark:text-blue-400 font-semibold"
+                      : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                   }`}
                 >
+                  {currentTab === item.id && (
+                    <motion.div
+                      layoutId="activeTabIndicator"
+                      className="absolute inset-0 bg-blue-50 dark:bg-blue-900/30 rounded-lg -z-10"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
                   {item.label}
                 </button>
               ))}
             {currentTab === "landing" && (
               <button
                 onClick={() => handleNavClick("dashboard")}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all"
+                className="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer"
               >
                 Launch Dashboard
               </button>
@@ -150,43 +158,52 @@ export default function Navbar({
       </div>
 
       {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2 pt-2 pb-4 space-y-1">
-          {currentTab !== "landing" ? (
-            navItems.map((item) => (
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            key="mobile-nav"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="md:hidden border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2 pt-2 pb-4 space-y-1 overflow-hidden"
+          >
+            {currentTab !== "landing" ? (
+              navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleNavClick(item.id)}
+                  className={`block w-full text-left px-4 py-2.5 rounded-lg text-base font-medium transition-all ${
+                    currentTab === item.id
+                      ? "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 font-bold"
+                      : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))
+            ) : (
               <button
-                key={item.id}
-                onClick={() => handleNavClick(item.id)}
-                className={`block w-full text-left px-4 py-2.5 rounded-lg text-base font-medium transition-all ${
-                  currentTab === item.id
-                    ? "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 font-bold"
-                    : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800"
-                }`}
+                onClick={() => handleNavClick("dashboard")}
+                className="block w-full text-left px-4 py-2.5 rounded-lg text-base font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800"
               >
-                {item.label}
+                Launch Dashboard
               </button>
-            ))
-          ) : (
-            <button
-              onClick={() => handleNavClick("dashboard")}
-              className="block w-full text-left px-4 py-2.5 rounded-lg text-base font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800"
-            >
-              Launch Dashboard
-            </button>
-          )}
+            )}
 
-          <div className="border-t border-slate-100 dark:border-slate-800 my-2 pt-2 flex items-center justify-around">
-            <div className="flex items-center text-xs font-semibold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/20 px-3 py-1.5 rounded-full">
-              <Flame className="mr-1 h-3.5 w-3.5 fill-orange-500" />
-              <span>{user.streak} Days</span>
+            <div className="border-t border-slate-100 dark:border-slate-800 my-2 pt-2 flex items-center justify-around">
+              <div className="flex items-center text-xs font-semibold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/20 px-3 py-1.5 rounded-full">
+                <Flame className="mr-1 h-3.5 w-3.5 fill-orange-500" />
+                <span>{user.streak} Days</span>
+              </div>
+              <div className="flex items-center text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/20 px-3 py-1.5 rounded-full">
+                <Trophy className="mr-1 h-3.5 w-3.5 fill-blue-500" />
+                <span>{user.xp} XP</span>
+              </div>
             </div>
-            <div className="flex items-center text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/20 px-3 py-1.5 rounded-full">
-              <Trophy className="mr-1 h-3.5 w-3.5 fill-blue-500" />
-              <span>{user.xp} XP</span>
-            </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }

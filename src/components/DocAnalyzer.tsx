@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useRef } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   FileText,
   Upload,
@@ -43,6 +44,7 @@ export default function DocAnalyzer({
 }: DocAnalyzerProps) {
   const [dragActive, setDragActive] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
+  const [analysisStep, setAnalysisStep] = useState(0);
   const [chatSending, setChatSending] = useState(false);
   const [chatInput, setChatInput] = useState("");
   const [currentTab, setCurrentTab] = useState<'summary' | 'fees' | 'risks' | 'easy' | 'terms'>('summary');
@@ -121,6 +123,11 @@ export default function DocAnalyzer({
   // Trigger server-side API call
   const triggerAnalysis = async (fileName: string, fileType: string, base64Data: string, customType?: string) => {
     setAnalyzing(true);
+    setAnalysisStep(0);
+    const intervalId = setInterval(() => {
+      setAnalysisStep((prev) => (prev < 3 ? prev + 1 : prev));
+    }, 1200);
+
     try {
       const response = await fetch("/api/analyze", {
         method: "POST",
@@ -161,6 +168,7 @@ export default function DocAnalyzer({
       console.error("API error during analysis:", e);
       alert("Failed to reach server-side analysis pipeline. Please retry.");
     } finally {
+      clearInterval(intervalId);
       setAnalyzing(false);
     }
   };
@@ -279,24 +287,74 @@ export default function DocAnalyzer({
               onChange={handleFileInput}
               className="hidden"
             />
-            <div className="flex flex-col items-center justify-center space-y-3.5">
-              <div className="h-11 w-11 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                {analyzing ? <Loader2 className="h-6 w-6 animate-spin" /> : <Upload className="h-6 w-6" />}
-              </div>
-              <div>
-                <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                  {analyzing ? "AI analyzing document..." : "Drag & drop your files"}
-                </p>
-                <p className="text-[11px] text-slate-400 mt-1">
-                  Supports PDFs, PNGs, and JPEGs up to 10MB
-                </p>
-              </div>
-              {!analyzing && (
+            {!analyzing ? (
+              <div className="flex flex-col items-center justify-center space-y-3.5">
+                <div className="h-11 w-11 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                  <Upload className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                    Drag & drop your files
+                  </p>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Supports PDFs, PNGs, and JPEGs up to 10MB
+                  </p>
+                </div>
                 <button className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-xs shadow-sm transition-all cursor-pointer">
                   Browse Files
                 </button>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center space-y-4 w-full">
+                <div className="relative h-14 w-14 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                  <div className="absolute inset-0 rounded-full border-4 border-blue-500/20 dark:border-blue-500/30 animate-ping" />
+                  <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+                </div>
+                <div className="w-full space-y-3 px-2">
+                  <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
+                    <span>AI Auditing Progress</span>
+                    <span>{Math.round(((analysisStep + 1) / 4) * 100)}%</span>
+                  </div>
+                  {/* Custom animated progress bar */}
+                  <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <motion.div
+                      className="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full"
+                      initial={{ width: "0%" }}
+                      animate={{ width: `${((analysisStep + 1) / 4) * 100}%` }}
+                      transition={{ duration: 0.4, ease: "easeOut" }}
+                    />
+                  </div>
+                  {/* Sequential steps list */}
+                  <div className="space-y-1.5 text-left pt-1">
+                    {[
+                      "Uploading document secure packet...",
+                      "Extracting and scanning page text...",
+                      "Auditing fine print with Gemini AI...",
+                      "Assembling critical risk report..."
+                    ].map((step, idx) => {
+                      const isDone = analysisStep > idx;
+                      const isActive = analysisStep === idx;
+                      return (
+                        <div
+                          key={idx}
+                          className={`flex items-center space-x-2 text-[10px] font-medium transition-colors duration-300 ${
+                            isDone
+                              ? "text-emerald-500 dark:text-emerald-400"
+                              : isActive
+                              ? "text-blue-600 dark:text-blue-400 font-bold"
+                              : "text-slate-300 dark:text-slate-700"
+                          }`}
+                        >
+                          <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                          <span>{step}</span>
+                          {isActive && <span className="text-[8px] font-mono animate-pulse font-normal"> (active)</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Quick Sandbox Templates */}
@@ -541,9 +599,25 @@ export default function DocAnalyzer({
               ))}
               {chatSending && (
                 <div className="flex justify-start">
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 rounded-bl-none flex items-center space-x-2">
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    <span>Gemini is thinking...</span>
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 rounded-bl-none flex items-center space-x-2.5 shadow-sm border border-slate-100 dark:border-slate-800/40">
+                    <div className="flex space-x-1 items-center h-4 shrink-0">
+                      <motion.div
+                        className="w-1.5 h-1.5 bg-blue-500 rounded-full"
+                        animate={{ y: [0, -4, 0] }}
+                        transition={{ repeat: Infinity, duration: 0.6, delay: 0 }}
+                      />
+                      <motion.div
+                        className="w-1.5 h-1.5 bg-blue-500 rounded-full"
+                        animate={{ y: [0, -4, 0] }}
+                        transition={{ repeat: Infinity, duration: 0.6, delay: 0.15 }}
+                      />
+                      <motion.div
+                        className="w-1.5 h-1.5 bg-blue-500 rounded-full"
+                        animate={{ y: [0, -4, 0] }}
+                        transition={{ repeat: Infinity, duration: 0.6, delay: 0.3 }}
+                      />
+                    </div>
+                    <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">Gemini is auditing...</span>
                   </div>
                 </div>
               )}
